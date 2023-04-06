@@ -5,7 +5,7 @@ lua常用方法，前后端可通用。
 
 ## Lua目录
 
-具体使用方法可以参考[单元测试用例](.\Lua\common\UnitTest)。
+具体使用方法可以参考[单元测试用例](https://github.com/ZensYue/ALua/tree/main/Lua/common/UnitTest)。
 
 Lua
 
@@ -31,7 +31,7 @@ Lua
 
 │		 ├── **dynamicload.lua** 动态加载
 
-│	     └── **object.lua** 基础对象
+│	   └── **object.lua** 基础对象
 
 
 
