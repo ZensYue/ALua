@@ -11,27 +11,27 @@ Lua
 
 ├── common
 
-│···├── **BT** 行为树，带使用案例。
+│······├── **BT** 行为树，带使用案例。
 
-│···├── **Delegate** 委托。
+│······├── **Delegate** 委托。
 
-│···├──  **Ex** 内置库table、string等扩展。
+│······├──  **Ex** 内置库table、string等扩展。
 
-│···├── **Message** 消息包含事件、订阅、红点。
+│······├── **Message** 消息包含事件、订阅、红点。
 
-│···├── **Time** 时间模块包括常用时间方法，定时器。
+│······├── **Time** 时间模块包括常用时间方法，定时器。
 
-│···├── **Tree** 树结构
+│······├── **Tree** 树结构
 
-│···├── **UnitTest** 单元测试
+│······├── **UnitTest** 单元测试
 
-│···├── **Aclass.lua** 模拟面向对象、Reimport方法
+│······├── **Aclass.lua** 模拟面向对象、Reimport方法
 
-│···├── **classcacheagent.lua** class缓存复用方法
+│······├── **classcacheagent.lua** class缓存复用方法
 
-│···├── **dynamicload.lua** 动态加载
+│······├── **dynamicload.lua** 动态加载
 
-│···└── **object.lua** 基础对象
+│······└── **object.lua** 基础对象
 
 
 
