@@ -1,0 +1,10 @@
+{
+    "source": [
+        {
+            "dir": "./",
+            "exclude": [
+                "common/UnitTest/Test_fiels/**.lua"
+            ]
+        }
+    ]
+}

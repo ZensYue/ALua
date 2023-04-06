@@ -1,0 +1,182 @@
+{
+	// Place your snippets for lua here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+
+	// ===============注释代码片段 start=============
+	"author_notes_file": {
+		"prefix": "author_notes_file",
+		"body": [
+			"--- $TM_FILENAME_BASE 功能说明",
+			"--- time:$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_HOUR",
+			"--- author：zensyue",
+			"--- notes: $1"
+		],
+		"description": "文件功能说明"
+	},
+
+	"author-notes-func": {
+		"prefix": "author_notes_func",
+		"body": [
+			"--- notes: $1",
+			"---@param $2",
+			"---@return number",
+		],
+		"description": "功能功能说明"
+	},
+
+	"author-notes-tab": {
+		"prefix": "author_notes_tab",
+		"body": [
+			"--- notes: $1",
+			"--- time:$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_HOUR",
+			"---@param $2",
+		],
+		"description": "table结构说明"
+	},
+
+	"module-notes": {
+		"prefix": "module-notes",
+		"body": [
+			"---*************************/////",
+			"--- notes: $1 start",
+			"",
+			"",
+			"--- notes: $1 end",
+			"---*************************/////",
+		],
+		"description": "文件功能说明"
+	},
+
+	"file_mit": {
+		"prefix": "file_mit",
+		"body": [
+			"--------------------------------------------------------------------------------",
+			"--      Copyright (c) $CURRENT_YEAR , ZensYue ZensYue@163.com",
+			"--      All rights reserved.",
+			"--      Use, modification and distribution are subject to the \"MIT License\"",
+			"--------------------------------------------------------------------------------",
+			"",
+		],
+		"description": "添加MIT"
+	},
+
+	//===============注释代码片段 end===============
+
+	
+
+	//===============常用方法 start=============
+	"start_time": {
+		"prefix": "start_time",
+		"body": [
+			"local function step()",
+			"\t-- 返回true，循环",
+			"\treturn true",
+			"end",
+			"self.time_id = Utils.AddTimer(step, ${1:0.2}, ${2:0})",
+
+			"if self.time_id then",
+			"\tUtils.DelTimer(self.time_id)",
+			"\tself.time_id = nil",
+			"end",
+		],
+		"description": "开启定时器"
+	},
+
+	"start_frame_time": {
+		"prefix": "start_frame_time",
+		"body": [
+			"local function step()",
+			"end",
+			"self.time_id = Utils.AddOnceFrameTimer(step, ${1:1})",
+
+			"if self.time_id then",
+			"\tUtils.DelTimer(self.time_id)",
+			"\tself.time_id = nil",
+			"end",
+		],
+		"description": "开启帧定时器"
+	},
+
+
+	"stop_time": {
+		"prefix": "stop_time",
+		"body": [
+			"if self.time_id then",
+			"\tUtils.DelTimer(self.time_id)",
+			"\tself.time_id = nil",
+			"end",
+		],
+		"description": "关闭定时器"
+	},
+
+	"foritems": {
+		"prefix": "foritems",
+		"body": [
+			"local list = {}",
+			"local len = #list",
+			"for i = 1, len do",
+			"\tlocal item = self.${1:m_ItemList}[i]",
+			"\tif not item then",
+			"\t\titem = self.${2:m_Item}:Clone()",
+			"\t\tself.${1:m_ItemList}[i] = item",
+			"\tend",
+			"\titem:SetActive(true)",
+			"\titem:SetParent(self.${3:m_Grid}:GetTransform())",
+			"\tlocal info = list[i]",
+			"\titem:SetData(info)",
+			"end",
+			"",
+			"local totalLen = #self.${1:m_ItemList}",
+			"for i = len+1,totalLen  do",
+			"\tlocal item = self.${1:m_ItemList}[i]",
+			"\titem:Destroy()",
+			"\tself.${1:m_ItemList}[i] = nil",
+			"end",
+			"",
+			"self.${3:m_Grid}:RepositionLater()",
+		],
+		"description": "创建itmes"
+	},
+
+	//===============常用方法 end===============
+
+
+
+	//===============自动生成代码 start=============
+	"auto-getsetfunc": {
+		"prefix": "getsetfunc",
+		"body": [
+			"---@return:$1 ${2:number}",
+			"function $TM_FILENAME_BASE:Get$1()",
+			"    return self.m_$1",
+			"end",
+
+			"---@param $1 ${2:number} $3",
+			"function $TM_FILENAME_BASE:Set${1:Value}($1)",
+			"    self.m_$1 = $1",
+			"end",
+		],
+		"description": "getset自动生成"
+	},
+
+	"auto-gfunc": {
+		"prefix": "gfunc",
+		"body": [
+			"function$TM_FILENAME_BASE:${1:func}()",
+			"end"
+		],
+		"description": "方法"
+	},
+	//===============自动生成代码 end===============
+}
