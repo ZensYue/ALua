@@ -25,6 +25,8 @@ Lua
 
 │······├── **UnitTest** 单元测试
 
+│······├── **Util** 常用库 敏感字检查、模糊搜索
+
 │······├── **Aclass.lua** 模拟面向对象、Reimport方法
 
 │······├── **classcacheagent.lua** class缓存复用方法
