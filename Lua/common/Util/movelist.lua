@@ -23,7 +23,7 @@ function movelist.New(list,step,looptype)
     looptype = looptype and looptype or 1
     local len = #list
     local page = step == 0 and len or math.ceil(len/step)
-	local t = {list = list,start_p = 1,last_step = nil,step = step,looptype = looptype,page = page,pageindex = 1,lenght = len}
+	local t = {list = list,left_p = len,right_p = 1,last_step = nil,step = step,looptype = looptype,page = page,pageindex = 1,lenght = len}
 	return setmetatable(t, movelist)
 end
 
@@ -34,20 +34,20 @@ end
 
 --- 设置移动起始index 不设置默认是1
 function movelist:setstartpoint(index)
-    self.start_p = index
-    self:legal()
+    self.right_p = self:legal(index)
+    self.left_p = self:legal(self.right_p - 1)
 end
 
 --- 判断是否越界
-function movelist:legal()
-    if self.start_p == 0 then
-        self.start_p = self.lenght
-        return true
-    elseif self.start_p > self.lenght or self.start_p < 0 then
-        self.start_p = self.start_p%self.lenght
-        return true
+function movelist:legal(index)
+    if index == 0 then
+        index = self.lenght
+        return index,true
+    elseif index > self.lenght or index < 0 then
+        index = index%self.lenght
+        return index,true
     end
-    return false
+    return index,false
 end
 
 --- 清理剩余步长 每次新循环之前需要手动调用
@@ -57,12 +57,12 @@ end
 
 --- 是否能左移
 function movelist:isleft()
-    return self.start_p >= 1
+    return self.left_p >= 1
 end
 
 --- 是否能右移
 function movelist:isright()
-    return self.start_p <= self.lenght
+    return self.right_p <= self.lenght
 end
 
 --- 返回当前页序号、总页数
@@ -72,44 +72,56 @@ end
 
 ---@private
 function movelist:leftmove()
-    --- 左移非循环,判断右边是否越界
-    if self.looptype == 0 then
-        self.start_p = self.start_p > self.lenght and self.lenght or self.start_p
-    end
-    return self:move(-1)
+    return self:move(true)
 end
 
 ---@private
 function movelist:rightmove()
-    --- 右移非循环,判断左边是否越界
-    if self.looptype == 0 then
-        self.start_p = self.start_p < 1 and 1 or self.start_p
-    end
-    return self:move(1)
+    return self:move(false)
 end
 
 ---@private
-function movelist:move(step)
+function movelist:move(ismoveleft)
     if not self.last_step then
         self.last_step = self.step
+        if ismoveleft then
+            self.right_p = self:legal(self.left_p + 1)
+        else
+            self.left_p = self:legal(self.right_p - 1)
+        end
     end
     if self.last_step == 0 then
         return nil
     end
-    local index = self.start_p
+    local index = ismoveleft and self.left_p or self.right_p
     local node = self.list[index]
     if not node then
         return nil
     end
+    local step = ismoveleft and -1 or 1
     self.pageindex = math.ceil(index/self.lenght)
-    self.start_p = self.start_p + step
     self.last_step = self.last_step - 1
-    if self.looptype == 1 then
-        self:legal()
-    elseif self.looptype == 2 then
-        local islegal = self:legal()
-        if islegal then
-            self.last_step = 0
+    if ismoveleft then
+        self.left_p = self.left_p + step
+        if self.looptype == 1 then
+            self.left_p = self:legal(self.left_p)
+        elseif self.looptype == 2 then
+            local new_l,islegal = self:legal(self.left_p)
+            self.left_p = new_l
+            if islegal then
+                self.last_step = 0
+            end
+        end
+    else
+        self.right_p = self.right_p + step
+        if self.looptype == 1 then
+            self.left_p = self:legal(self.right_p)
+        elseif self.looptype == 2 then
+            local new_r,islegal = self:legal(self.right_p)
+            self.right_p = new_r
+            if islegal then
+                self.last_step = 0
+            end
         end
     end
     return index,node
