@@ -98,30 +98,25 @@ function movelist:move(ismoveleft)
     if not node then
         return nil
     end
+    local lastpage = self.pageindex
+    local newpageindex = math.ceil(index/self.step)
+    if self.looptype == 2 and self.last_step < self.step and lastpage ~= newpageindex then
+        self.last_step = nil
+        return nil
+    else
+        self.last_step = self.last_step - 1
+    end
+    self.pageindex = newpageindex
     local step = ismoveleft and -1 or 1
-    self.pageindex = math.ceil(index/self.lenght)
-    self.last_step = self.last_step - 1
     if ismoveleft then
         self.left_p = self.left_p + step
-        if self.looptype == 1 then
+        if self.looptype == 1 or self.looptype == 2 then
             self.left_p = self:legal(self.left_p)
-        elseif self.looptype == 2 then
-            local new_l,islegal = self:legal(self.left_p)
-            self.left_p = new_l
-            if islegal then
-                self.last_step = 0
-            end
         end
     else
         self.right_p = self.right_p + step
-        if self.looptype == 1 then
-            self.left_p = self:legal(self.right_p)
-        elseif self.looptype == 2 then
-            local new_r,islegal = self:legal(self.right_p)
-            self.right_p = new_r
-            if islegal then
-                self.last_step = 0
-            end
+        if self.looptype == 1 or self.looptype == 2 then
+            self.right_p = self:legal(self.right_p)
         end
     end
     return index,node
