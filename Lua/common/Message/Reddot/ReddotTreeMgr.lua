@@ -148,7 +148,7 @@ function ReddotTreeMgr:FindNode(key)
 	if node then
 		return node
 	end
-	return self.m_reddottree:findnode(nil,key)
+	-- return self.m_reddottree:findnode(nil,key)
 end
 
 ---@private
@@ -175,7 +175,7 @@ end
 --- 要避免切号问题,所以需要外部调用.切号要用不同的文件路径加载.注意移动平台要传可读写路径
 function ReddotTreeMgr:LoadCacheFile(filePath)
 	if self.m_ReddotCaches then
-		return
+		self:LogoutCheckCache()
 	end
 	self.m_CacheFilePath = filePath
 
@@ -262,16 +262,26 @@ function ReddotTreeMgr:StartCacheTime(data)
 	self.time_id = g_Timer:StartOnce(step, time)
 end
 
+--- 主动退出游戏 需要手动调用
+--- 避免单日只显示一次,遇到跨天问题.
+--- 比如第一天勾选单日只显示一次,跨天才退出游戏,第二天打开游戏是否勾选状态?需要的自行打开下面屏蔽代码
 function ReddotTreeMgr:LogoutCheckCache()
 	if not self.m_ReddotCaches then
 		return
 	end
-	for key, info in pairs(self.m_ReddotCaches) do
-		if info.showType == ReddotType.ShowType.DayOnce then
-			info.time = os.time()
-		end
-	end
+
+	--- 自行开启
+	-- for key, info in pairs(self.m_ReddotCaches) do
+	-- 	if info.showType == ReddotType.ShowType.DayOnce then
+	-- 		info.time = os.time()
+	-- 	end
+	-- end
+
 	self:SaveCacheFile()
+	if self.time_id then
+		g_Timer:Stop(self.time_id)
+		self.time_id = nil
+	end
 	self.m_ReddotCaches = nil
 end
 

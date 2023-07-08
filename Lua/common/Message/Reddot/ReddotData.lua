@@ -45,6 +45,7 @@ function ReddotData:SetValue(num)
 
 	if (self.m_showtype == ReddotType.ShowType.LoginOnce
 			or self.m_showtype == ReddotType.ShowType.DayOnce or self.m_showtype == ReddotType.ShowType.PlatformOnce) and self.m_showtime > 0 then
+			self.m_value = old_v
 			return false
 	else
 		self:SetDirtyValue(num)
