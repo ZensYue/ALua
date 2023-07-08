@@ -14,8 +14,11 @@ function Tree:ctor(data,pos,node_cls)
 	self.top_node = self:addnode(nil,pos,data)
 end
 
+---@param data ReddotData
+---@return TreeNode
 function Tree:addnode(parent_node,key,data)
 	parent_node = parent_node or self.top_node
+	---@type TreeNode
 	local node = self.node_cls.New(parent_node,key)
 	if parent_node then
 		parent_node:addchild(node)

@@ -12,6 +12,7 @@ ReddotTreeMgr.KeySplitChar = "_"
 ReddotTreeMgr.Debug = true
 
 function ReddotTreeMgr:ctor()
+	---@type Tree
 	self.m_reddottree = Tree.New(nil,"top")
 
 	--- 红点key保证唯一，这里取巧做个字典索引
@@ -161,22 +162,132 @@ function ReddotTreeMgr:OnChangeReddot(key,value)
 	end
 	---@type ReddotData
 	local data = node.data
-	if data.m_showtype == ReddotType.ShowType.DayOnce then
+	if (data.m_showtype == ReddotType.ShowType.DayOnce or data.m_showtype == ReddotType.ShowType.PlatformOnce) and data.m_showtime > 0 then
 		--- 缓存到本地
-		self:SaveDayShowCache(key,value)
+		self:StartCacheTime(data)
 	end
 end
 
 ---*************************/////
---- notes: 本地缓存 未处理 start
----@param key string
----@param value number|boolean
-function ReddotTreeMgr:SaveDayShowCache(key,value)
-	-- Todo
+--- notes: 本地缓存 start
 
+--- 加载缓存文件
+--- 要避免切号问题,所以需要外部调用.切号要用不同的文件路径加载.注意移动平台要传可读写路径
+function ReddotTreeMgr:LoadCacheFile(filePath)
+	if self.m_ReddotCaches then
+		return
+	end
+	self.m_CacheFilePath = filePath
+
+	local cacheTab = {}
+
+	local isexist = io.exists(self.m_CacheFilePath)
+	if isexist then
+		for content in io.lines(self.m_CacheFilePath) do
+			local tab = string.split(content,",")
+			local key = tab[1]
+			local showType = tonumber(tab[2])
+			local time
+			if showType == ReddotType.ShowType.DayOnce then
+				time = tonumber(tab[3])
+			end
+			cacheTab[key] = {
+				key = key,
+				showType = showType,
+				time = time,
+			}
+		end
+	end
+
+	---@type ReddotCacheInfo[]
+    self.m_ReddotCaches = cacheTab
+
+	local curTime = os.time()
+	local removeKeys
+	for key, info in pairs(self.m_ReddotCaches) do
+		local isCache = false
+		if info.showType == ReddotType.ShowType.DayOnce then
+			local diffDay = timeutil.getdiffday(curTime,info.time)
+			if diffDay == 0 then
+				isCache = true
+			else
+				removeKeys = removeKeys or {}
+				removeKeys[#removeKeys+1] = key
+			end
+		elseif info.showType == ReddotType.ShowType.PlatformOnce then
+			isCache = true
+		end
+		if isCache then
+			self:SetNodeShowType(key,info.showType)
+			local node = self:GetNodeOrCreate(key)
+			node.data.m_showtime = 1
+			node.data.m_value = 0
+		end
+	end
+
+	if removeKeys then
+		for _, key in pairs(removeKeys) do
+			self.m_ReddotCaches[key] = nil
+		end
+	end
 end
 
-function ReddotTreeMgr:InitDayShowCache()
+---@param data ReddotData
+function ReddotTreeMgr:StartCacheTime(data)
+	if not self.m_ReddotCaches then
+		error("[error]未初始化红点数据")
+		return
+	end
+	if self.m_ReddotCaches[data.m_key] then
+		local info = self.m_ReddotCaches[data.m_key]
+		info.key = data.m_key
+		info.showType = data.m_showtype
+		info.time = os.time()
+	else
+		self.m_ReddotCaches[data.m_key] = {
+			key = data.m_key,
+			showType = data.m_showtype,
+			time = os.time()
+		}
+	end
+
+	if self.time_id then
+		return
+	end
+	local function step()
+		self:SaveCacheFile()
+		self.time_id = nil
+	end
+	local time = 3
+	self.time_id = g_Timer:StartOnce(step, time)
+end
+
+function ReddotTreeMgr:LogoutCheckCache()
+	if not self.m_ReddotCaches then
+		return
+	end
+	for key, info in pairs(self.m_ReddotCaches) do
+		if info.showType == ReddotType.ShowType.DayOnce then
+			info.time = os.time()
+		end
+	end
+	self:SaveCacheFile()
+	self.m_ReddotCaches = nil
+end
+
+function ReddotTreeMgr:SaveCacheFile()
+	if not self.m_CacheFilePath then
+		return
+	end
+	local contents = {}
+	for _, value in pairs(self.m_ReddotCaches) do
+		if value.showType == ReddotType.ShowType.DayOnce then
+			contents[#contents+1] = string.format("%s,%s,%s",value.key,value.showType,value.time)
+		elseif value.showType == ReddotType.ShowType.PlatformOnce then
+			contents[#contents+1] = string.format("%s,%s",value.key,value.showType)
+		end
+	end
+	io.writefile(self.m_CacheFilePath,table.concat(contents,"\n"))
 end
 --- notes: 本地缓存 end
 ---*************************/////

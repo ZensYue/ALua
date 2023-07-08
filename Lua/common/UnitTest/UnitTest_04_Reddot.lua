@@ -78,4 +78,50 @@ function  UnitTest_04_Reddot:TestValueType()
     g_Event:Remove(event_id)
 end
 
+
+--- 测试一天只显示一次和设备只显示一次
+function  UnitTest_04_Reddot:TestOnceType()
+    UnitTestUpdate(1)
+
+    local reddotKey1 = "a4_b_c1"
+    local reddotKey2 = "a4_b_c2"
+    local function f(key,value)
+        print("TestOnceType ",key,value)
+    end
+    local event_id = g_Event:Add("UpdateReddot",f)
+
+
+    local cachePath = "common/UnitTest/Test_fiels/reddotcache"
+
+    g_ReddotTreeMgr:LoadCacheFile(cachePath)
+
+    g_ReddotTreeMgr:SetNodeShowType(reddotKey1,ReddotType.ShowType.DayOnce)
+    g_ReddotTreeMgr:SetNodeShowType(reddotKey2,ReddotType.ShowType.PlatformOnce)
+
+    print("TestOnceType SetNodeNum Time 1")
+    g_ReddotTreeMgr:SetNodeNum(reddotKey1,1)
+    g_ReddotTreeMgr:SetNodeNum(reddotKey2,1)
+    UnitTestUpdate(4)
+
+    print("TestOnceType SetNodeNum Time 2")
+    g_ReddotTreeMgr:SetNodeNum(reddotKey1,0)
+    g_ReddotTreeMgr:SetNodeNum(reddotKey2,0)
+    UnitTestUpdate(4)
+
+    local s = io.readfile(cachePath)
+    print("TestOnceType reddotcache content\n",s)
+
+    print("TestOnceType SetNodeNum Time 3")
+    g_ReddotTreeMgr:SetNodeNum(reddotKey1,1)
+    g_ReddotTreeMgr:SetNodeNum(reddotKey2,1)
+    UnitTestUpdate(4)
+
+    print("TestOnceType SetNodeNum Time 4")
+    g_ReddotTreeMgr:SetNodeNum(reddotKey1,0)
+    g_ReddotTreeMgr:SetNodeNum(reddotKey2,0)
+    UnitTestUpdate(4)
+
+    g_Event:Remove(event_id)
+end
+
 UnitTest_04_Reddot.Run()

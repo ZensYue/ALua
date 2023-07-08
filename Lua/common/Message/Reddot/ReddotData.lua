@@ -37,24 +37,22 @@ function ReddotData:Clear()
 end
 
 function ReddotData:SetValue(num)
+	if self.m_value == num then
+		return false
+	end
 	local old_v = self.m_value
 	self.m_value = num
 
-	if old_v ~= num then
+	if (self.m_showtype == ReddotType.ShowType.LoginOnce
+			or self.m_showtype == ReddotType.ShowType.DayOnce or self.m_showtype == ReddotType.ShowType.PlatformOnce) and self.m_showtime > 0 then
+			return false
+	else
+		self:SetDirtyValue(num)
 		if old_v > 0 and self.m_value == 0 then
 			self.m_showtime = self.m_showtime + 1
-			if self.m_showtime == 1 then
-				self:SetDirtyValue(num)
-				return
-			end
-		end
-		if (self.m_showtype == ReddotType.ShowType.LoginOnce
-			or self.m_showtype == ReddotType.ShowType.DayOnce) and self.m_showtime > 0 then
-			return
-		else
-			self:SetDirtyValue(num)
 		end
 	end
+	return true
 end
 
 function ReddotData:IsDirty()

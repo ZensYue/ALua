@@ -26,6 +26,7 @@ function TreeNode:clear()
 end
 
 function TreeNode:setdata(data)
+	---@type ReddotData
 	self.data = data
 end
 
