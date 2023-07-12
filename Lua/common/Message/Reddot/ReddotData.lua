@@ -63,11 +63,14 @@ end
 function ReddotData:SetDirtyValue(num)
 	local value = self:ConvertValue(num)
 	if self.m_dirty_value.old == value then
+		self:SetDirty(self.m_dirty_value.new ~= self.m_dirty_value.old)
+		self.m_dirty_value.new = value
 		self:StopTime()
-		self:SetDirty(false)
 		return
 	end
 	if self.m_dirty_value.new == value then
+		-- self:SetDirty(self.m_dirty_value.new ~= self.m_dirty_value.old)
+		-- self.m_dirty_value.old = value
 		return
 	end
 	self.m_dirty_value.new = value

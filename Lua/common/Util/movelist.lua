@@ -83,7 +83,7 @@ end
 ---@private
 function movelist:move(ismoveleft)
     if not self.last_step then
-        self.last_step = self.step
+        self.last_step = math.min(self.step,self.lenght)
         if ismoveleft then
             self.right_p = self:legal(self.left_p + 1)
         else

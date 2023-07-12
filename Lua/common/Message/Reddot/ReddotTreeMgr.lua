@@ -47,6 +47,7 @@ function ReddotTreeMgr:SetNodeNum(key,num)
 	node.data:SetValue(num)
 	if node.data:IsParentDirty() then
 		self:SetParentValue(node)
+		node.data:SetDirty(false)
 		
 		-- local cur_node = node
 		-- while(cur_node and cur_node.data)do
