@@ -22,11 +22,6 @@ function SubscribeNode:ctor(key,value,callback,type)
     self.m_Finish = nil
     self.m_Cache = false
 
-    -- lua 5.1
-    -- self.m_Reversal = bit.band(self.m_Type, SubscribeType.LessThan) ~= SubscribeType.LessThan 
-    --- false:大于等于 true 小于等于
-    self.m_Reversal = self.m_Type & SubscribeType.LessThan == SubscribeType.LessThan
-
     self:Init()
 end
 
@@ -59,6 +54,11 @@ function SubscribeNode:UpdateValue()
 end
 
 function SubscribeNode:Init()
+    -- lua 5.1
+    -- self.m_Reversal = bit.band(self.m_Type, SubscribeType.LessThan) ~= SubscribeType.LessThan 
+    --- false:大于等于 true 小于等于
+    self.m_Reversal = self.m_Type & SubscribeType.LessThan == SubscribeType.LessThan
+    
     if self.m_Type == SubscribeType.INCREMENT then
         assert(self.m_TargetValue ~= 0,"增量订阅的目标值不能为0")
     end
